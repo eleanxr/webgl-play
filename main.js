@@ -5,10 +5,29 @@ function RenderManager() {
         scene,
         camera,
         mesh,
+        shaderContent = {},
         start = Date.now(),
         fov = 30;
 
+    function loadShader(type, url) {
+        return $.ajax({
+            url: url,
+            dataType: "text",
+        });
+    }
+
     function init() {
+        $.when(
+            loadShader("vertex", "vertex.glsl"),
+            loadShader("fragment", "fragment.glsl")
+        ).then(function (vertexShader, fragmentShader) {
+            shaderContent["vertex"] = vertexShader[0];
+            shaderContent["fragment"] = fragmentShader[0];
+            enterRenderLoop();
+        });
+    }
+
+    function enterRenderLoop() {
         container = document.getElementById("container");
 
         scene = new THREE.Scene();
@@ -25,8 +44,8 @@ function RenderManager() {
         scene.add(camera);
 
         material = new THREE.ShaderMaterial({
-            vertexShader: document.getElementById("vertexShader").textContent,
-            fragmentShader: document.getElementById("fragmentShader").textContent
+            vertexShader: shaderContent["vertex"],
+            fragmentShader: shaderContent["fragment"]
         });
 
         mesh = new THREE.Mesh(
