@@ -1,46 +1,53 @@
-var container,
-    renderer,
-    scene,
-    camera,
-    mesh,
-    start = Date.now(),
-    fov = 30;
 
-window.addEventListener('load', function () {
-    container = document.getElementById("container");
+function RenderManager() {
+    var container,
+        renderer,
+        scene,
+        camera,
+        mesh,
+        start = Date.now(),
+        fov = 30;
 
-    scene = new THREE.Scene();
+    function init() {
+        container = document.getElementById("container");
 
-    camera = new THREE.PerspectiveCamera(
-        fov,
-        window.innerWidth / window.innerHeight,
-        1,
-        10000
-    );
-    camera.position.z = 100;
-    camera.target = new THREE.Vector3(0, 0, 0);
+        scene = new THREE.Scene();
 
-    scene.add(camera);
+        camera = new THREE.PerspectiveCamera(
+            fov,
+            window.innerWidth / window.innerHeight,
+            1,
+            10000
+        );
+        camera.position.z = 100;
+        camera.target = new THREE.Vector3(0, 0, 0);
 
-    material = new THREE.MeshBasicMaterial({
-        color: 0xb7ff00,
-        wireframe: true
-    });
+        scene.add(camera);
 
-    mesh = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(20, 4),
-        material
-    );
-    scene.add(mesh);
+        material = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById("vertexShader").textContent,
+            fragmentShader: document.getElementById("fragmentShader").textContent
+        });
 
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+        mesh = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(20, 4),
+            material
+        );
+        scene.add(mesh);
 
-    render();
-});
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
 
-function render() {
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
+        render();
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+    }
+
+    return {
+        init: init
+    }
 }

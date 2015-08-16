@@ -7,6 +7,31 @@
     <body>
         <div id="container"></div>
         <script src="bower_components/threejs/build/three.min.js"></script>
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="main.js"></script>
+
+        <script type="x-shader/x-vertex" id="vertexShader">
+            varying vec2 vUv;
+
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragmentShader">
+            varying vec2 vUv;
+
+            void main() {
+                gl_FragColor = vec4(vec3(vUv, 0.0), 1.0);
+            }
+        </script>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var manager = RenderManager();
+                manager.init();
+            });
+        </script>
     </body>
 </html>
